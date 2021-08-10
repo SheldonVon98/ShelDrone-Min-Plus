@@ -22,7 +22,14 @@
 #include "cmsis_os.h"
 #include "usb_device.h"
 #include "usb_device.h"
-
+#include <stabilizer.h>
+#include <sensors.h>
+#include <error.h>
+#include <battery.h>
+#include <receiver.h>
+#include <pid_process.h>
+#include <motor.h>
+#include <transmit.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -145,7 +152,10 @@ int main(void)
   MX_SPI1_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -510,7 +520,7 @@ static void MX_TIM11_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM11_Init 2 */
-
+  HAL_TIM_IC_Start_IT(&htim11, TIM_CHANNEL_1);
   /* USER CODE END TIM11_Init 2 */
 
 }
@@ -625,7 +635,9 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	sensorsRead();
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartMainControlTask */
@@ -639,11 +651,20 @@ void StartMainControlTask(void *argument)
 {
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
+  droneStatusInit();
+  motorInit(&htim2,&channels[THROTTLE]);
+  stabilizerTaskInit();
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(4);
+    detectDroneStatus();
+//    pidProcess();
+    stabilizerTask();
+    setMotors3D(pid_pitch_speed.out,
+				pid_roll_speed.out,
+				pid_yaw_speed.out);
   }
   /* USER CODE END 5 */
 }
@@ -658,10 +679,12 @@ void StartMainControlTask(void *argument)
 void sensorTask(void *argument)
 {
   /* USER CODE BEGIN sensorTask */
+	osDelay(500);
+	sensorsInit(&hi2c1);
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(1000);
   }
   /* USER CODE END sensorTask */
 }
@@ -676,10 +699,15 @@ void sensorTask(void *argument)
 void startWatchDogTask(void *argument)
 {
   /* USER CODE BEGIN startWatchDogTask */
+	batteryInit(&hadc1);
+	errorInit();
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  watchBattery();
+	  errorSignal();
+	  transmitDebugData();
+	  osDelay(LED_UNIT_PERIOD);
   }
   /* USER CODE END startWatchDogTask */
 }
