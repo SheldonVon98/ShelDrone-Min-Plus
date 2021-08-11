@@ -9,6 +9,7 @@
 #define ALGORITHM_PID_INC_PID_PROCESS_H_
 
 #include <droneStatus.h>
+#include <algorithm.h>
 #include "pid.h"
 #include "sensors.h"
 

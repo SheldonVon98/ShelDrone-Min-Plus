@@ -13,6 +13,7 @@
 #include <stdarg.h>
 #include <sensors.h>
 #include <fusion.h>
+#include <receiver.h>
 #include "attitudeEstimate.h"
 
 

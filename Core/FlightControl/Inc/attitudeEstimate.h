@@ -10,6 +10,7 @@
 
 #include <SheldroneConfig.h>
 #include <sensors.h>
+#include <algorithm.h>
 #include "fusion.h"
 
 void attitudeEstimateTaskInit();

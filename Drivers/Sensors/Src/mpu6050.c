@@ -134,25 +134,21 @@ void MPU6050_Compose(SensorData *sData, MPU6050_Data *data, uint8_t *raw){
 	dt = (double)(HAL_GetTick() - timer) / 1000.0;
 	timer = HAL_GetTick();
 
-	complimentaryFilter(&(sData->gyro.x), data->Gy, 0.3);
-	complimentaryFilter(&sData->gyro.y, data->Gx, 0.3);
+	complimentaryFilter(&sData->gyro.y, data->Gy, 0.3);
+	complimentaryFilter(&sData->gyro.x, data->Gx, 0.3);
 	complimentaryFilter(&sData->gyro.z, data->Gz, 0.3);
 
-//	IMUFusion(&fusionData,
-//			sData->gyro_pitch*DEG2RAD,
-//			sData->gyro_roll*DEG2RAD,
-//			sData->gyro_yaw*DEG2RAD,
-//			data->Ax,
-//			data->Ay,
-//			data->Az, dt);
+	sData->acc.x = data->Ax;
+	sData->acc.y = data->Ay;
+	sData->acc.z = data->Az;
 
 	IMUFusion(&fusionData,
 			sData->gyro.x*DEG2RAD,
 			sData->gyro.y*DEG2RAD,
-			sData->gyro.x*DEG2RAD,
+			sData->gyro.z*DEG2RAD,
 			sData->acc.x,
 			sData->acc.y,
-			sData->acc.z, dt);
+			sData->acc.z, 0.001);
 }
 
 void MPU6050_Compose_Export(SensorData *data){

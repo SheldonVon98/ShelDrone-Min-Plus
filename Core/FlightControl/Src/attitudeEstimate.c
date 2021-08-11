@@ -13,7 +13,7 @@ extern FusionData fusionData;
 
 
 void attitudeEstimateTaskInit(){
-	fusionData.q.w = 1;
+	quaternionInit(&fusionData.q);
 }
 void attitudeEstimateTask(){
 	pidProcess();

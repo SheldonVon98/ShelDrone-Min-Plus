@@ -48,7 +48,7 @@ void fillArrayPosition_16Bit(double value, uint16_t index, uint16_t scale){
 }
 
 
-extern FusionData xyfusion, zfusion;
+extern Quaternion q_err, q_target;
 void fillDebugBuffer(){
 	transfer_buffer[TRANS_START_HIGH] = 'S';
 	transfer_buffer[TRANS_START_LOW] = 'V';
@@ -83,10 +83,10 @@ void fillDebugBuffer(){
 
 		fillArrayPosition_16Bit(0, TRANS_MAG_ANG_HIGH, 100);
 
-	fillArrayPosition_16Bit(fusionData.q.w, TRANS_Q1_HIGH, 10000);
-	fillArrayPosition_16Bit(fusionData.q.x, TRANS_Q2_HIGH, 10000);
-	fillArrayPosition_16Bit(fusionData.q.y, TRANS_Q3_HIGH, 10000);
-	fillArrayPosition_16Bit(fusionData.q.z, TRANS_Q4_HIGH, 10000);
+	fillArrayPosition_16Bit(q_target.w, TRANS_Q1_HIGH, 10000);
+	fillArrayPosition_16Bit(q_target.x, TRANS_Q2_HIGH, 10000);
+	fillArrayPosition_16Bit(q_target.y, TRANS_Q3_HIGH, 10000);
+	fillArrayPosition_16Bit(q_target.z, TRANS_Q4_HIGH, 10000);
 }
 
 void transmitDebugData(){

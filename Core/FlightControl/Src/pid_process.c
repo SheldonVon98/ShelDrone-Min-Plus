@@ -118,6 +118,8 @@ void pidsInit(){
 	pidInit(&pid_yaw_speed, pid_yaw_speed_param, 0.004);
 	pid_yaw_speed.outputLimit = 200;
 
+	quaternionInit(&q_target);
+	quaternionInit(&q_err);
 }
 
 void pidProcess(){
@@ -144,8 +146,10 @@ void pidProcess(){
 		if(setpoints.yaw > 720) setpoints.yaw = 0;
 		else if(setpoints.yaw < 0) setpoints.yaw = 720;
 
-		q_target = RPY2quaternion(-setpoints.roll, setpoints.pitch, setpoints.yaw);
-		q_err = quaternionCross(q_target, fusionData.q);
+		q_target = RPY2quaternion(-setpoints.roll,
+									setpoints.pitch,
+									setpoints.yaw);
+		q_err = quaternionCross(quaternionConjugate(q_target), fusionData.q);
 
 		pidUpdate(&pid_pitch_angle, q_err.x * 100.0, 0);
 		pidUpdate(&pid_roll_angle, q_err.y * 100.0, 0);

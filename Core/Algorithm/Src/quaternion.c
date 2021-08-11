@@ -7,9 +7,13 @@
 
 #include "quaternion.h"
 
-Quaternion q_result;
 
-void quaternion2RotMat(Quaternion q, float rotationMat[3][3]){
+
+void quaternionInit(Quaternion *q){
+	q->w = 1;
+}
+
+void quaternion2RotMat(static Quaternion q, float rotationMat[3][3]){
     float q1q1 = q.x * q.x;
     float q2q2 = q.y * q.y;
     float q3q3 = q.z * q.z;
@@ -34,7 +38,8 @@ void quaternion2RotMat(Quaternion q, float rotationMat[3][3]){
     rotationMat[2][2] = 1.0f - 2.0f * q1q1 - 2.0f * q2q2;
 }
 
-Quaternion quaternionCross(Quaternion a, Quaternion b){
+Quaternion quaternionCross(static Quaternion a, static Quaternion b){
+	Quaternion q_result;
 	q_result.w = a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z;
 	q_result.x = a.w*b.x + a.x*b.w + a.y*b.z - a.z*b.y;
 	q_result.y = a.w*b.y - a.x*b.z + a.y*b.w + a.z*b.x;
@@ -42,7 +47,8 @@ Quaternion quaternionCross(Quaternion a, Quaternion b){
 	return q_result;
 }
 
-Quaternion RPY2quaternion(float roll, float pitch, float yaw){
+Quaternion RPY2quaternion(static float roll, static float pitch, static float yaw){
+	Quaternion q_result;
     double cy = cos(yaw * DEG2RAD* 0.5);
     double sy = sin(yaw * DEG2RAD* 0.5);
     double cp = cos(roll * DEG2RAD* 0.5);
@@ -56,15 +62,22 @@ Quaternion RPY2quaternion(float roll, float pitch, float yaw){
     return q_result;
 }
 
+Quaternion quaternionConjugate(Quaternion q){
+	q.x = -q.x;
+	q.y = -q.y;
+	q.z = -q.z;
+	return q;
+}
+
 void quaternionNorm(Quaternion *q){
-	float recipNorm = invSqrt(q->w * q->w + q->x * q->x + q->y * q->y + q->z * q->z);
+	static float recipNorm = invSqrt(q->w * q->w + q->x * q->x + q->y * q->y + q->z * q->z);
 	q->w *= recipNorm;
 	q->x *= recipNorm;
 	q->y *= recipNorm;
 	q->z *= recipNorm;
 }
 
-float invSqrt(float x) {
+float invSqrt(static float x) {
 	float halfx = 0.5f * x;
 	float y = x;
 	long i = *(long*)&y;
