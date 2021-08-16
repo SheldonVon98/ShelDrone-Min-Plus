@@ -22,6 +22,9 @@
 #include "cmsis_os.h"
 #include "usb_device.h"
 #include "usb_device.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include <stabilizer.h>
 #include <sensors.h>
 #include <error.h>
@@ -30,9 +33,6 @@
 #include <pid_process.h>
 #include <motor.h>
 #include <transmit.h>
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
